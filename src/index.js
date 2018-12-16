@@ -18,6 +18,7 @@ let gameover = false;
 let time = defaultTime;
 let timeInterval = null;
 let symbols = defaultSymbols;
+let sound = true;
 
 /**
  * Text for the timer.
@@ -39,6 +40,20 @@ let textTimer = null;
  * @type {PIXI.Sprite}
  */
 let loadingScreenSprite = null;
+
+/**
+ * Loading Bar.
+ *
+ * @type {PIXI.Sprite}
+ */
+let loadingBarSprite = null;
+
+/**
+ * Loading Bar Background Sprite.
+ *
+ * @type {PIXI.Sprite}
+ */
+let loadingBarBackgroundSprite = null;
 
 /**
  * Play button sprite.
@@ -69,6 +84,13 @@ let winSprite = null;
 let loseSprite = null;
 
 /**
+ * Sound Button Sprite.
+ *
+ * @type {PIXI.Sprite}
+ */
+let soundButtonSprite = null;
+
+/**
  * Sets the initial setup. The loading bar.
  */
 const initialSetup = () => {
@@ -81,6 +103,24 @@ const initialSetup = () => {
     loadingScreenSprite.width = app.renderer.width;
     loadingScreenSprite.height = app.renderer.height;
     app.stage.addChild(loadingScreenSprite);
+
+    // Loading Bar Background
+    loadingBarBackgroundSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    loadingBarBackgroundSprite.tint = 0xffffff;
+    loadingBarBackgroundSprite.width = app.renderer.width / 4;
+    loadingBarBackgroundSprite.height = app.renderer.width / 14;
+    loadingBarBackgroundSprite.x = (app.renderer.width / 2) - loadingBarBackgroundSprite.width / 2;
+    loadingBarBackgroundSprite.y = (app.renderer.height / 2) - loadingBarBackgroundSprite.height / 2;
+    app.stage.addChild(loadingBarBackgroundSprite);
+
+    // Loading Bar
+    loadingBarSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    loadingBarSprite.tint = 0xff0000;
+    loadingBarSprite.width = 0;
+    loadingBarSprite.height = app.renderer.width / 14;
+    loadingBarSprite.x = loadingBarBackgroundSprite.x;
+    loadingBarSprite.y = loadingBarBackgroundSprite.y;
+    app.stage.addChild(loadingBarSprite);
 
     // Add application to the page
     document.getElementById("main").appendChild(app.view);
@@ -170,6 +210,26 @@ const setup = () => {
     loseSprite.alpha = 0;
     app.stage.addChild(loseSprite);
 
+    const soundButtonTexture = PIXI.utils.TextureCache["sound.png"];
+    soundButtonSprite = new PIXI.Sprite(soundButtonTexture);
+    soundButtonSprite.width = app.renderer.width / 20;
+    soundButtonSprite.height = (app.renderer.width / 20) * (soundButtonTexture.height / soundButtonTexture.width);
+    soundButtonSprite.x = app.renderer.width - soundButtonSprite.width * 1.5;
+    soundButtonSprite.y = soundButtonSprite.height / 2;
+    soundButtonSprite.interactive = true;
+    soundButtonSprite.on('pointerdown', () => {
+        if(sound) {
+            soundButtonSprite.texture = PIXI.utils.TextureCache["sound_off.png"];
+            PIXI.loader.resources["sounds/jungle.mp3"].sound.stop();
+        } else {
+            soundButtonSprite.texture = PIXI.utils.TextureCache["sound.png"];
+            PIXI.loader.resources["sounds/jungle.mp3"].sound.play()
+        }
+        sound = !sound;
+    });
+    app.stage.addChild(soundButtonSprite);
+
+
     // Add the game loop
     app.ticker.add(delta => play(delta));
     animate();
@@ -219,7 +279,8 @@ function animate() {
 function finished(flag) {
     started = false;
     gameover = true;
-    PIXI.loader.resources[flag ? "sounds/win.mp3" : "sounds/lose.mp3"].sound.play();
+
+    if(sound) PIXI.loader.resources[flag ? "sounds/win.mp3" : "sounds/lose.mp3"].sound.play();
 
     const actionAlpha = new PIXI.action.AlphaTo(0.75, 0.25);
     const actionShow = new PIXI.action.AlphaTo(1, 0.25);
@@ -287,10 +348,9 @@ window.addEventListener("load", () => {
         // Then run the setup() function
         setup();
     }, ({ progress }) => {
-        console.log(progress);
+        // Update loading bar
+        loadingBarSprite.width = (loadingBarBackgroundSprite.width * progress / 100);
     });
 });
 
-initialSetup();
-
-export { started };
+export { started, sound };

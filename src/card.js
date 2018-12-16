@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { started } from "./index";
+import { sound, started } from "./index";
 
 /**
  * Stores all the card sprites.
@@ -97,7 +97,7 @@ const cardPressed = (index) => {
 
     // Flip
     if(started && activeCards.length < matchAmount && !card.activated) {
-        PIXI.loader.resources["sounds/flip.mp3"].sound.play();
+        if(sound) PIXI.loader.resources["sounds/flip.mp3"].sound.play();
 
         // Change the sprite texture
         card.texture = PIXI.utils.TextureCache[`${card.face}.png`];
@@ -119,7 +119,7 @@ const cardPressed = (index) => {
                     });
                 });
             } else {
-                PIXI.loader.resources["sounds/yay.mp3"].sound.play();
+                if(sound) PIXI.loader.resources["sounds/yay.mp3"].sound.play();
                 // MATCH! Set the sprites to activated
                 activeCards.map((sprite) => sprite.activated = true);
                 activeCards = [];
