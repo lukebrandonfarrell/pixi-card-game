@@ -1,23 +1,45 @@
-import config from "./config.shared.js";
-
 import path from "path";
 import webpack from "webpack";
-import copyWebpackPlugin from "copy-webpack-plugin";
 
 export default {
+    entry: ["babel-polyfill", "./src/index.js"],
 
-    ...config,
+    output: {
+        path: path.resolve(__dirname, "../dist"),
+        publicPath: "/",
+        filename: "game.js"
+    },
+
+    node: {
+        fs: "empty"
+    },
+
+    resolve: {
+        root: [ path.resolve(__dirname, "../src") ],
+        extensions: [".js", ""]
+    },
+
+    stats: {
+        colors: true,
+        chunks: false
+    },
 
     devtool: "#source-map",
 
     plugins: [
-        ...config.plugins,
+        new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.NoErrorsPlugin(),
         new webpack.HotModuleReplacementPlugin()
     ],
 
     module: {
-        ...config.module,
+        loaders: [{
+            test: /\.js$/,
+            include: [
+                path.resolve(__dirname, "../src")
+            ],
+            loader: "babel-loader",
+        }],
         preLoaders: [{
             test: /\.js$/,
             include: [
