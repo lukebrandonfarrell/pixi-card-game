@@ -1,0 +1,92 @@
+{"frames": {
+
+"bgload.png":
+{
+	"frame": {"x":1,"y":797,"w":574,"h":65},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":574,"h":65},
+	"sourceSize": {"w":574,"h":65}
+},
+"heart.png":
+{
+	"frame": {"x":694,"y":1051,"w":184,"h":173},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":184,"h":173},
+	"sourceSize": {"w":184,"h":173}
+},
+"load.png":
+{
+	"frame": {"x":577,"y":797,"w":367,"h":36},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":367,"h":36},
+	"sourceSize": {"w":367,"h":36}
+},
+"lose.png":
+{
+	"frame": {"x":1,"y":1,"w":1003,"h":396},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1003,"h":396},
+	"sourceSize": {"w":1003,"h":396}
+},
+"luck.png":
+{
+	"frame": {"x":503,"y":1051,"w":189,"h":184},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":189,"h":184},
+	"sourceSize": {"w":189,"h":184}
+},
+"play.png":
+{
+	"frame": {"x":1,"y":864,"w":498,"h":500},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":498,"h":500},
+	"sourceSize": {"w":498,"h":500}
+},
+"sound.png":
+{
+	"frame": {"x":577,"y":835,"w":214,"h":215},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":214,"h":215},
+	"sourceSize": {"w":214,"h":215}
+},
+"sound_off.png":
+{
+	"frame": {"x":794,"y":835,"w":214,"h":215},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":214,"h":215},
+	"sourceSize": {"w":214,"h":215}
+},
+"star.png":
+{
+	"frame": {"x":880,"y":1051,"w":102,"h":104},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":102,"h":104},
+	"sourceSize": {"w":102,"h":104}
+},
+"win.png":
+{
+	"frame": {"x":1,"y":399,"w":1003,"h":396},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1003,"h":396},
+	"sourceSize": {"w":1003,"h":396}
+}},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "gui.png",
+	"format": "RGBA8888",
+	"size": {"w":1010,"h":1363},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:197b1c633095c963ec9c28450e79304e:449f63aca62a1c09c1b712a1b86d558c:788b34ed4e778d63c84b2c3df4d44949$"
+}
+}

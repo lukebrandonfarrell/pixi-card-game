@@ -1,7 +1,7 @@
 // ./node_modules/.bin/webpack --verbose --progress --colors --display-error-details --config webpack/config.prod.js
 
 import webpack from "webpack";
-import webpackProdConfig from "./config.prod.js";
+import webpackProdConfig from "./config.js";
 
 const compiler = webpack(webpackProdConfig);
 

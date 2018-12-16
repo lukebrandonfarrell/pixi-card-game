@@ -1,67 +1,296 @@
 import * as PIXI from "pixi.js";
-import initRenderer from "./initRenderer";
-import preloadResources from "./preloadResources";
-import getTexture from "./getTexture";
+require("pixi-action");
+require("pixi-sound");
+import { preloadResources, resources } from "./loader";
+import { backgrounds, createBackground } from "./background";
+import { addCardSymbols, createCards, getCardsMatched, resetCards } from "./card";
+import { fetchGame } from "./api";
+import { defaultSymbols, defaultTime } from "./values";
 
-// "Global" variables we need to use across multiple functions
-let demoStage, ghostSprite;
-let hSpeed = 1, vSpeed = 1;
+/**
+ * The previous application state
+ *
+ * @type {PIXI.Application}
+ */
+let app;
+let started = false;
+let gameover = false;
+let time = defaultTime;
+let timeInterval = null;
+let symbols = defaultSymbols;
 
-// Define the main game loop
-const redraw = (time, renderer) => {
+/**
+ * Text for the timer.
+ *
+ * @type {PIXI.Container}
+ */
+let cards = null;
 
-    // Redraw when browser is ready
-    requestAnimationFrame(t => redraw(t, renderer));
+/**
+ * Text for the timer.
+ *
+ * @type {PIXI.Text}
+ */
+let textTimer = null;
 
-    // Move the ghost sprite around
-    ghostSprite.x += 2.3 * hSpeed;
-    ghostSprite.y += 0.8 * vSpeed;
+/**
+ * Loading Screen sprite.
+ *
+ * @type {PIXI.Sprite}
+ */
+let loadingScreenSprite = null;
 
-    // Bounce on the view boundaries
-    if (ghostSprite.x <= 0 || ghostSprite.x + ghostSprite.width >= renderer.view.width)
-        hSpeed *= -1;
+/**
+ * Play button sprite.
+ *
+ * @type {PIXI.Sprite}
+ */
+let playButton = null;
 
-    if (ghostSprite.y <= 0 || ghostSprite.y + ghostSprite.height >= renderer.view.height)
-        vSpeed *= -1;
+/**
+ * Faded overlay sprite.
+ *
+ * @type {PIXI.Sprite}
+ */
+let fadedSprite = null;
 
-    // Render the scene
-    renderer.render(demoStage);
+/**
+ * Win Sprite.
+ *
+ * @type {PIXI.Sprite}
+ */
+let winSprite = null;
+
+/**
+ * Lose Sprite.
+ *
+ * @type {PIXI.Sprite}
+ */
+let loseSprite = null;
+
+/**
+ * Sets the initial setup. The loading bar.
+ */
+const initialSetup = () => {
+    // Setup the application
+    app = new PIXI.Application({ width: window.innerWidth, height: window.innerHeight });
+
+    // Loading Screen Overlay
+    loadingScreenSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    loadingScreenSprite.tint = 0x000000; //Change with the color wanted
+    loadingScreenSprite.width = app.renderer.width;
+    loadingScreenSprite.height = app.renderer.height;
+    app.stage.addChild(loadingScreenSprite);
+
+    // Add application to the page
+    document.getElementById("main").appendChild(app.view);
 };
 
 /**
  *  Set up the game after the window and resources have finished loading.
- *  Creates the renderer, sets up the stages, and performs the initial render.
  */
 const setup = () => {
+    // Add backgrounds
+    const background = createBackground(backgrounds[Math.round(Math.random() * 4)], app.renderer);
+    app.stage.addChild(background);
 
-    const renderer = initRenderer();
+    // Add cards
+    cards = createCards(app.renderer);
+    cards.x = (app.renderer.width / 2) - (cards.width / 2);
+    cards.y = (app.renderer.height / 2) - (cards.height / 2);
+    app.stage.addChild(cards);
 
-    // Create a container object called the `stage`
-    demoStage = new PIXI.Container();
+    // Add text explaining the game
+    const description = new PIXI.Text(
+        'Press play to start. Match all cards in the required time to win the game!',
+        {
+            fontFamily : 'Helvetica',
+            fontSize: 24,
+            fill : 0xffffff,
+            align : 'center',
+            dropShadow: true,
+            dropShadowDistance: 3,
+            wordWrap: true,
+            wordWrapWidth: app.renderer.width
+        });
+    description.x = (app.renderer.width / 2) - (description.width / 2);
+    description.y = (app.renderer.height - description.height) - 20;
+    app.stage.addChild(description);
 
-    const ghostTex = getTexture("images/ghost.png");
-    ghostSprite = new PIXI.Sprite(ghostTex);
+    // Play button
+    playButton = new PIXI.Sprite(PIXI.utils.TextureCache["play.png"]);
+    playButton.width = app.renderer.width / 8;
+    playButton.height = (app.renderer.width / 8) * (playButton.texture.height / playButton.texture.width);
+    playButton.x = (cards.x + cards.width / 2) - playButton.width / 2;
+    playButton.y = (cards.y + cards.height / 2) - playButton.height / 2;
+    playButton.interactive = true;
+    playButton.on('pointerdown', playButtonClicked);
+    app.stage.addChild(playButton);
 
-    ghostSprite.position.set(160, 80);
+    // Timer Sprite
+    textTimer = new PIXI.Text(
+        time,
+        {
+            fontFamily : 'Helvetica',
+            fontSize: 90,
+            fill : 0xffffff,
+            align : 'center',
+            dropShadow: true,
+        });
+    textTimer.x = (cards.x + cards.width / 2) - textTimer.width / 2;
+    textTimer.y = (cards.y + cards.height / 2) - textTimer.height / 2;
+    textTimer.visible = false;
+    app.stage.addChild(textTimer);
 
-    demoStage.addChild(ghostSprite);
+    // Faded overlay
+    fadedSprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+    fadedSprite.tint = 0x000000; //Change with the color wanted
+    fadedSprite.width = app.renderer.width;
+    fadedSprite.height = app.renderer.height;
+    fadedSprite.alpha = 0;
+    app.stage.addChild(fadedSprite);
 
-    // Perform initial render
-    redraw(-1, renderer);
+    // Background box for win / lose screen
+    const winTexture = PIXI.utils.TextureCache["win.png"];
+    winSprite = new PIXI.Sprite(winTexture);
+    winSprite.width = app.renderer.width / 2;
+    winSprite.height = (app.renderer.width / 2) * (winTexture.height / winTexture.width);
+    winSprite.x = (app.renderer.width / 2) - winSprite.width / 2;
+    winSprite.y = (app.renderer.height / 2) - winSprite.height / 2;
+    winSprite.alpha = 0;
+    app.stage.addChild(winSprite);
+
+    // Background box for win / lose screen
+    const loseTexture = PIXI.utils.TextureCache["lose.png"];
+    loseSprite = new PIXI.Sprite(loseTexture);
+    loseSprite.width = app.renderer.width / 2;
+    loseSprite.height = (app.renderer.width / 2) * (loseTexture.height / loseTexture.width);
+    loseSprite.x = (app.renderer.width / 2) - loseSprite.width / 2;
+    loseSprite.y = (app.renderer.height / 2) - loseSprite.height / 2;
+    loseSprite.alpha = 0;
+    app.stage.addChild(loseSprite);
+
+    // Add the game loop
+    app.ticker.add(delta => play(delta));
+    animate();
+
+    // Start Music
+    PIXI.loader.resources["sounds/jungle.mp3"].sound.play();
+    PIXI.loader.resources["sounds/jungle.mp3"].sound.loop = true;
+};
+
+/**
+ * Game Loop
+ *
+ * @param delta
+ */
+const play = (delta) => {
+    if (started && !gameover) {
+        // Update Timer
+        textTimer.text = time;
+        // Adjust width of timer based on text size
+        textTimer.x = (cards.x + cards.width / 2) - textTimer.width / 2;
+
+        // Game Won
+        if (getCardsMatched()) {
+            finished(1);
+        } else if (time <= 0) { // Game Lose
+            finished(0);
+        }
+    }
+};
+
+
+/**
+ * Animation loop
+ */
+function animate() {
+    window.requestAnimationFrame(animate);
+    app.renderer.render(app.stage);
+    PIXI.actionManager.update(); // update actions
+}
+
+
+/**
+ * Finishes the game and prompts the user with the lose / win screen
+ *
+ * @param flag - How did the game finish? 0 - Lose, 1 - Win
+ */
+function finished(flag) {
+    started = false;
+    gameover = true;
+    PIXI.loader.resources[flag ? "sounds/win.mp3" : "sounds/lose.mp3"].sound.play();
+
+    const actionAlpha = new PIXI.action.AlphaTo(0.75, 0.25);
+    const actionShow = new PIXI.action.AlphaTo(1, 0.25);
+    const actionHide = new PIXI.action.AlphaTo(0, 0.25);
+    const fadedAnimation = PIXI.actionManager.runAction(fadedSprite, actionAlpha);
+
+    fadedAnimation.on('end', () => {
+        if(flag) {
+            PIXI.actionManager.runAction(winSprite, actionShow);
+        } else {
+            PIXI.actionManager.runAction(loseSprite, actionShow);
+        }
+
+        setTimeout(() => {
+            PIXI.actionManager.runAction(fadedSprite, actionHide);
+            PIXI.actionManager.runAction(winSprite, actionHide);
+            PIXI.actionManager.runAction(loseSprite, actionHide);
+            PIXI.actionManager.runAction(playButton, actionShow);
+            resetGame();
+        }, 5000);
+    });
+}
+
+/**
+ * Resets the scene for the next game
+ */
+function resetGame(){
+    gameover = false;
+    textTimer.visible = false;
+    resetCards();
+    clearInterval(timeInterval);
+}
+
+/**
+ * Function called when the play button is clicked
+ */
+const playButtonClicked = () => {
+    if(!started) { // Start Game
+        // Get data
+        const response = fetchGame();
+        time = response.time;
+        symbols = response.symbols;
+        started = true;
+
+        // Add card symbols
+        addCardSymbols(symbols);
+
+        // Start and show the timer
+        timeInterval = window.setInterval(() => {
+            // Subtract Timer
+            if(time > 0) time -= 1;
+        }, 1000);
+        textTimer.visible = true;
+
+        const actionFade = new PIXI.action.FadeOut(0.2);
+        PIXI.actionManager.runAction(playButton, actionFade);
+    }
 };
 
 /* ---------- Initialisation ---------- */
-
-// Wait until the page is fully loaded
 window.addEventListener("load", () => {
-
-    // List of resources to load
-    const resources = ["images/ghost.png"];
-
+    initialSetup();
     // Then load the images
     preloadResources(resources, () => {
-
         // Then run the setup() function
         setup();
+    }, ({ progress }) => {
+        console.log(progress);
     });
 });
+
+initialSetup();
+
+export { started };

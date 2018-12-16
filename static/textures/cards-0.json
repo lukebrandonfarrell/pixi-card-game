@@ -1,0 +1,64 @@
+{"frames": {
+
+"_back.png":
+{
+	"frame": {"x":1,"y":1,"w":759,"h":654},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":33,"y":36,"w":759,"h":654},
+	"sourceSize": {"w":825,"h":726}
+},
+"_face1.png":
+{
+	"frame": {"x":762,"y":1,"w":758,"h":656},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":33,"y":34,"w":758,"h":656},
+	"sourceSize": {"w":825,"h":721}
+},
+"_face2.png":
+{
+	"frame": {"x":1,"y":1317,"w":758,"h":691},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":33,"y":0,"w":758,"h":691},
+	"sourceSize": {"w":825,"h":721}
+},
+"_face4.png":
+{
+	"frame": {"x":761,"y":1319,"w":792,"h":691},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":33,"y":34,"w":792,"h":691},
+	"sourceSize": {"w":825,"h":725}
+},
+"_face6.png":
+{
+	"frame": {"x":761,"y":659,"w":779,"h":658},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":22,"y":34,"w":779,"h":658},
+	"sourceSize": {"w":825,"h":715}
+},
+"_face14.png":
+{
+	"frame": {"x":1,"y":657,"w":758,"h":658},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":33,"y":34,"w":758,"h":658},
+	"sourceSize": {"w":825,"h":724}
+}},
+"animations": {
+	"_face": ["_face1.png","_face2.png","_face4.png","_face6.png","_face14.png"]
+},
+"meta": {
+	"app": "https://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "cards-0.png",
+	"format": "RGBA8888",
+	"size": {"w":1554,"h":2011},
+	"scale": "1",
+	"related_multi_packs": [ "cards-1.json", "cards-2.json" ],
+	"smartupdate": "$TexturePacker:SmartUpdate:82865dbf3549b7de62cc8fd5aa415d42:b519364f5634ddedff94eab2e46a4909:10f4f8ebe33da6c4e84f70a58b92bfe6$"
+}
+}
