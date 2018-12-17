@@ -195,6 +195,32 @@
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
+            <key type="filename">../../../Downloads/PNG/bubble/bgload.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>144,16,287,33</rect>
+                <key>scale9Paddings</key>
+                <rect>144,16,287,33</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
+            <key type="filename">../../../Downloads/PNG/bubble/load.png</key>
+            <struct type="IndividualSpriteSettings">
+                <key>pivotPoint</key>
+                <point_f>0,0</point_f>
+                <key>scale9Enabled</key>
+                <false/>
+                <key>scale9Borders</key>
+                <rect>92,9,183,18</rect>
+                <key>scale9Paddings</key>
+                <rect>92,9,183,18</rect>
+                <key>scale9FromFile</key>
+                <false/>
+            </struct>
             <key type="filename">../../../Downloads/PNG/menu/play.png</key>
             <struct type="IndividualSpriteSettings">
                 <key>pivotPoint</key>
@@ -205,19 +231,6 @@
                 <rect>125,125,249,250</rect>
                 <key>scale9Paddings</key>
                 <rect>125,125,249,250</rect>
-                <key>scale9FromFile</key>
-                <false/>
-            </struct>
-            <key type="filename">../../../Downloads/PNG/pause/table.png</key>
-            <struct type="IndividualSpriteSettings">
-                <key>pivotPoint</key>
-                <point_f>0,0</point_f>
-                <key>scale9Enabled</key>
-                <false/>
-                <key>scale9Borders</key>
-                <rect>206,139,412,277</rect>
-                <key>scale9Paddings</key>
-                <rect>206,139,412,277</rect>
                 <key>scale9FromFile</key>
                 <false/>
             </struct>
@@ -280,12 +293,13 @@
             <filename>../../../Downloads/PNG/menu/play.png</filename>
             <filename>../../../Downloads/PNG/btn/sound_off.png</filename>
             <filename>../../../Downloads/PNG/btn/sound.png</filename>
-            <filename>../../../Downloads/PNG/pause/table.png</filename>
             <filename>../../../Downloads/PNG/you_lose/lose.png</filename>
             <filename>../../../Downloads/PNG/you_win/win.png</filename>
             <filename>../../../Downloads/PNG/upgrade/star.png</filename>
             <filename>../../../Downloads/PNG/upgrade/luck.png</filename>
             <filename>../../../Downloads/PNG/upgrade/heart.png</filename>
+            <filename>../../../Downloads/PNG/bubble/bgload.png</filename>
+            <filename>../../../Downloads/PNG/bubble/load.png</filename>
         </array>
         <key>ignoreFileList</key>
         <array/>

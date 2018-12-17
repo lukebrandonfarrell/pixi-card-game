@@ -40,20 +40,6 @@ export default {
             ],
             loader: "babel-loader",
         }],
-        preLoaders: [{
-            test: /\.js$/,
-            include: [
-                path.resolve(__dirname, "../src")
-            ],
-            loader: "eslint-loader",
-        }]
-    },
-
-    eslint: {
-        failOnWarning: false,
-        failOnError: false,
-        emitWarning: true,
-        quiet: true
     },
 
     historyApiFallback: {
